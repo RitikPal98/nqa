@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Box, IconButton, Paper } from "@material-ui/core";
+import { Box, Button, IconButton, Paper } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { addToDowanloadingQueue } from "../../store/slices/downloadSlice";
 import { changeURL } from "../../store/slices/playerSlice";
@@ -24,7 +24,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CloseIcon from "@material-ui/icons/Close";
 
-import { Image } from "../../components";
+import { ActionList, Image } from "../../components";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ListItem({ data, currentPlayingPosition }) {
+export default function ListItem({ data, currentPlayingPosition, children }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [isDownloaded, setIsDownloaded] = useState(false);
@@ -95,28 +95,6 @@ export default function ListItem({ data, currentPlayingPosition }) {
 
   const { id, name, link, image, categoryId, category_id, highlightName } =
     data;
-
-  const handleDownload = async () => {
-    if (isDownloaded) {
-      try {
-        const cache = await caches.open("audio_cache");
-        const res = await cache.delete(new Request(link));
-        if (res) setIsDownloaded(false);
-      } catch (error) {}
-    } else {
-      dispatch(
-        addToDowanloadingQueue({
-          name: name,
-          id: id,
-          link: link,
-          image: image,
-          categoryId: categoryId || category_id,
-          currentPlayingPosition: currentPlayingPosition,
-          progress: 0,
-        })
-      );
-    }
-  };
 
   const handlePlay = () => {
     dispatch(
@@ -139,7 +117,7 @@ export default function ListItem({ data, currentPlayingPosition }) {
       } else {
         player.pause();
       }
-    }
+    } 
   };
 
   useEffect(() => {
@@ -148,31 +126,8 @@ export default function ListItem({ data, currentPlayingPosition }) {
       .then((res) => {
         if (res) setIsDownloaded(true); //checking whether already downloaaded
       })
-      .catch((e) => {});
+      .catch((e) => { });
   }, [downloadingIds, link]);
-
-  //  favorite category related code
-  const { favorite } = useSelector((state) => state.favorite);
-  const [present, setPresent] = useState(false);
-  const [display, setDisplay] = useState(true);
-  // const [fileType, setFileType] = useState("audio/mp3");
-  const notify = (message) =>
-    toast.success(message, {
-      position: "bottom-left",
-      autoClose: true,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  useEffect(() => {
-    if (favorite.find((item) => item.id === id)) {
-      setPresent(true);
-    } else {
-      setPresent(false);
-    }
-  }, [id, favorite]);
 
   // useEffect(() => {
   //   if (link.slice(-3) === "mp4") {
@@ -184,82 +139,24 @@ export default function ListItem({ data, currentPlayingPosition }) {
 
   // download notification toast  ##########################
   let toastId = React.useRef(id);
-  const notifys = () =>
-    (toastId.current = toast.loading("Downloading please wait...", {
-      position: toast.POSITION.BOTTOM_LEFT,
-      closeButton: CloseButton,
-    }));
+
   const dismiss = () => toast.dismiss(toastId.current);
-  const CloseButton = () => (
-    <i className="material-icons" onClick={dismiss}>
-      <CloseIcon />
-    </i>
-  );
-
-  // Current blob size limit is around 500MB for browsers
-  function forceDownload(blob, filename) {
-    var a = document.createElement("a");
-    a.download = filename;
-    a.href = blob;
-    // For Firefox https://stackoverflow.com/a/32226068
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    toast.update(toastId.current, {
-      render: "Downloaded",
-      type: "success",
-      isLoading: false,
-    });
-    dismiss();
-  }
-
-  
-  function downloadResource(url, filename) {
-    notifys();
-    if (!filename) filename = url.split("\\").pop().split("/").pop();
-    filename=filename.replace(".","  ")
-    fetch(url, {
-      headers: new Headers({
-        Origin: window.location.origin,
-      }),
-      mode: "cors",
-    })
-      .then((response) => response.blob())
-      .then((blob) => {
-        let blobUrl = window.URL.createObjectURL(blob);
-        forceDownload(blobUrl, filename);
-      })
-      .catch((e) => console.error(e));
-  }
-
-  function handleFavorite() {
-    dispatch(
-      changeFav({
-        name: name,
-        link: link,
-        id: id,
-        image: image,
-        categoryId: categoryId || category_id,
-        currentPlayingPosition: currentPlayingPosition,
-      })
-    );
-  }
 
   return (
-    <Paper variant="outlined" className={classes.mainContainer}>
+    <Paper variant="outlined" className={classes.mainContainer} style={{ backgruondColor: 'red' }}>
       <Image src={image} className={classes.image} />
       <Box
-        pl={1}
+        px={1}
         py={1}
         display="flex"
         flexDirection="column"
         justifyContent="space-between"
+        width={'100%'}
       >
-        <Box display="flex" justifyContent="center" alignItems="center">
-          {id === currentPlayingId && (
-            <IconButton onClick={togglePlay} size="small">
-              {playing ? (
+          <Box display="flex" justifyContent="center" alignItems="center">
+            {/* {id === currentPlayingId && ( */}
+            <IconButton onClick={id === currentPlayingId ? togglePlay : handlePlay} size="small">
+              {(playing && id === currentPlayingId) ? (
                 <PauseCircleOutlineRoundedIcon
                   fontSize="large"
                   style={{ color: "#179992" }}
@@ -271,168 +168,24 @@ export default function ListItem({ data, currentPlayingPosition }) {
                 />
               )}
             </IconButton>
-          )}
+            {/* )} */}
 
-          <Box
-            onClick={handlePlay}
-            className={classes.title}
-            textAlign="left"
-            fontWeight="fontWeightMedium"
-            fontSize="subtitle2.fontSize"
-            ml={1}
-            pr={1}
-          >
-            {highlightName ? parse(highlightName) : name}
+            <Box
+              onClick={handlePlay}
+              className={classes.title}
+              textAlign="left"
+              fontWeight="fontWeightMedium"
+              fontSize="subtitle2.fontSize"
+              ml={1}
+              pr={1}
+            >
+              {highlightName ? parse(highlightName) : name}
+            </Box>
           </Box>
-        </Box>
 
-        <Box display="flex" alignItems="center" justifyContent="flex-start">
-          <IconButton
-            disabled={downloadingIds.includes(id)}
-            onClick={handleDownload}
-            size="small"
-          >
-            <CheckCircleIcon
-              className="check-cache-icon"
-              style={
-                isDownloaded
-                  ? { color: "rgb(16, 180, 102)" }
-                  : { color: "gray" }
-              }
-            />
-          </IconButton>
-          <IconButton size="small">
-            <a
-              className="download-icon-container"
-              data-tip="downloading"
-              // href={`data:${fileType},` + link}
-              // target="_blank"
-              // download={name}
-              onClick={() => {
-                // notify("downloading")
-                downloadResource(link, name);
-              }}
-            >
-              <DownloadIcon />
-            </a>
-          </IconButton>
-          <IconButton onClick={handleFavorite} size="small">
-            <FavoriteBorderIcon
-              style={
-                present ? { color: "rgb(240,100,100)" } : { color: "#777" }
-              }
-            />
-          </IconButton>
-          <IconButton
-            onClick={() => (display ? setDisplay(false) : setDisplay(true))}
-            size="small"
-          >
-            <ShareIcon />
-          </IconButton>
-          <div>
-            <div
-              style={display ? { width: "0" } : { width: "100%" }}
-              className="share-btn"
-            >
-              <IconButton
-                data-tip="Copy the link"
-                className="btn-link"
-                onClick={(e) => {
-                  notify("Link has been copied");
-                  e.target.style.color = "rgb(29,161,245)";
-                  setTimeout(() => {
-                    e.target.style.color = "#777";
-                  }, 2000);
-                  navigator.clipboard.writeText(link);
-                }}
-                size="small"
-              >
-                <ReactTooltip place="top" type="dark" effect="float" />
-                <LinkIcon />
-              </IconButton>
-
-              <a
-                data-tip="Share on Twitter"
-                class="btn-twitter"
-                href={"https://twitter.com/share?url=" + link}
-                onClick={(e) => {
-                  javascript: window.open(
-                    "https://twitter.com/share?url=" +
-                      link +
-                      "&text=Assalamo alaykum. What do you think of this audio?",
-                    "Twitter",
-                    "menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600"
-                  );
-                  return false;
-                }}
-                target="_blank"
-                title="Share on Twitter"
-              >
-                <ReactTooltip place="top" type="dark" effect="float" />
-                <Twitter />
-              </a>
-              <a
-                data-tip="Share on Facebook"
-                class="btn-facebook"
-                href={"https://www.facebook.com/sharer/sharer.php?u=" + link}
-                onClick={(e) => {
-                  javascript: window.open(
-                    "https://www.facebook.com/sharer/sharer.php?u=" + link,
-                    "",
-                    "menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600"
-                  );
-                  return false;
-                }}
-                target="_blank"
-                title="Share on Facebook"
-              >
-                <ReactTooltip place="top" type="dark" effect="float" />
-                <Facebook />
-              </a>
-              <a
-                data-tip="Share on Whatsapp"
-                class="btn-whatsapp"
-                href={
-                  "https://api.whatsapp.com/send?text=Assalamo alaykum. What do you think of this audio?" +
-                  link
-                }
-                onClick={(e) => {
-                  javascript: window.open(
-                    "https://api.whatsapp.com/send?text=Assalamo alaykum. What do you think of this audio? " +
-                      link,
-                    "",
-                    "menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600"
-                  );
-                  return false;
-                }}
-                target="_blank"
-                title="Share on Whatsapp"
-              >
-                <ReactTooltip place="top" type="dark" effect="float" />
-                <Whatsapp />
-              </a>
-
-              <a
-                data-tip="Share on Email"
-                className="btn-email"
-                href={
-                  "mailto:?subject=Assalamo alaykum. What do you think of this audio?&body=" +
-                  link +
-                  "%0D%0A %0D%0A" +
-                  "More enlightening signs at " +
-                  "https://Listen.NurulQuran.com "
-                }
-                title="Share by Email"
-              >
-                <ReactTooltip place="top" type="dark" effect="float" />
-
-                <Email />
-              </a>
-            </div>
-          </div>
-        </Box>
+        <ActionList data={data} currentPlayingPosition={currentPlayingPosition} children={children} />
       </Box>
-      <ToastContainer className="notification-container-copied" />
+      <ToastContainer autoClose={1000} className="notification-container-copied" />
     </Paper>
   );
 }

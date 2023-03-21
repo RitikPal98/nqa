@@ -9,7 +9,7 @@ import { domain } from "../data/config";
 export const useData = (props = {}) => {
     const dispatch = useDispatch();
 
-    const { offlineMode = false, searchText = undefined, categoryId = undefined } = props;
+    const { offlineMode = false, searchText = undefined, categoryId = undefined, shouldSearch = true } = props;
     const [loading, setLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -19,6 +19,10 @@ export const useData = (props = {}) => {
     const [categorySearchTotalPages, setCategorySearchTotalPages] = useState(1);
 
     const getAudioListOnline = async () => {
+        if (!shouldSearch) {
+            return;
+        }
+
         setLoading(true);
 
         let link = `${domain}/index.php/api/songView?page=${currentPage}`;
@@ -44,6 +48,10 @@ export const useData = (props = {}) => {
     };
 
     const getAudioListOffline = async () => {
+        if (!shouldSearch) {
+            return;
+        }
+
         try {
             setLoading(true);
 

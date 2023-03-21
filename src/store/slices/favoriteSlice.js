@@ -5,6 +5,7 @@ export const favoriteSlice = createSlice({
     name: "favorite",
     initialState: {
         favorite:[],
+        subCatsVisible: true
     },
     reducers: {
         changeFav: (state, action) => {
@@ -32,10 +33,13 @@ export const favoriteSlice = createSlice({
                 });
             }
         },
+        changeSubCatsVisible: (state, action) => {
+            state.subCatsVisible = action.payload.subCatsVisible;
+        }
     },
     
 });
 
-export const { changeFav } = favoriteSlice.actions;
+export const { changeFav, changeSubCatsVisible } = favoriteSlice.actions;
 
 export default favoriteSlice.reducer;

@@ -2,7 +2,7 @@ const core = require("@actions/core");
 const axios = require("axios");
 
 const getCategories = async (page = 1) => {
-    const query = `http://nqapp.nurulquran.com/index.php/api/category?page=${page}`;
+    const query = `https://nqapp.nurulquran.com/index.php/api/category?page=${page}`;
     const response = await axios.get(query);
     const data = response.data;
 
@@ -14,7 +14,7 @@ const getCategories = async (page = 1) => {
 };
 
 const getSubCategories = async (id, page = 1) => {
-    const query = `http://nqapp.nurulquran.com/index.php/api/getSubs?page=${page}&categoryId=${id}`;
+    const query = `https://add.nurulquran.com/index.php/api/getSubs?page=${page}&categoryId=${id}`;
     const response = await axios.get(query);
     const data = response.data;
 
@@ -66,3 +66,4 @@ async function run() {
 run();
 
 //ncc build index.js --license licenses.txt
+//osamakhan

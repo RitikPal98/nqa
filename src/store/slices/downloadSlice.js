@@ -21,7 +21,7 @@ export const downloadAudio = createAsyncThunk("download/audio", async ({ id, lin
             },
             cancelToken: source.token, // to cancel  donwalod from the download notificaiotn
         });
-    } catch (error) {}
+    } catch (error) { }
 });
 
 export const downloadAudioList = createAsyncThunk("downalod/audioList", async (_, { dispatch }) => {
@@ -39,12 +39,12 @@ export const downloadAudioList = createAsyncThunk("downalod/audioList", async (_
             return data.data;
         }
         */
-    }; 
+    };
 
     try {
         const res = await getAudioListFromAllPages();
         await offlineAPI.addAudio(res);
-    } catch (error) {}
+    } catch (error) { }
 });
 
 export const downalodSlice = createSlice({
@@ -77,9 +77,9 @@ export const downalodSlice = createSlice({
             const percentage = (action.payload.page * 100) / action.payload.allpage;
             state.audioListDownloadProgress = Math.round(percentage);
         },
-        changeCache: (state,action) =>{
-            if (state.cachelist.find((item) => item.id === action.payload.id)){
-                let a=state.cachelist.filter((item) => item.id !== action.payload.id)
+        changeCache: (state, action) => {
+            if (state.cachelist.find((item) => item.id === action.payload.id)) {
+                let a = state.cachelist.filter((item) => item.id !== action.payload.id)
                 // console.log("!!!!!!!!!!!!!!!!!!!",a)
                 state.cachelist = a
                 return
@@ -116,6 +116,6 @@ export const downalodSlice = createSlice({
     },
 });
 
-export const { addToDowanloadingQueue, updateOfflineStatus,changeCache } = downalodSlice.actions;
+export const { addToDowanloadingQueue, updateOfflineStatus, changeCache } = downalodSlice.actions;
 
 export default downalodSlice.reducer;

@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import { Box, Container, IconButton, useMediaQuery, useTheme } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import { Box, Container, useMediaQuery, useTheme } from "@material-ui/core";
-import { Image, ListItem } from "../../components";
-import "swiper/swiper.min.css";
-import "swiper/components/pagination/pagination.min.css";
-import Pagination from "@material-ui/lab/Pagination";
-import { useData } from "../../hooks/useData";
-import { useParams } from "react-router-dom";
-import { getCategoryById } from "../../db/services";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import {IconButton} from "@material-ui/core";
+import Pagination from "@material-ui/lab/Pagination";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import "swiper/components/pagination/pagination.min.css";
+import "swiper/swiper.min.css";
+import { Image, ListItem } from "../../components";
+import { getCategoryByNameAndSubCategoryNames } from "../../db/services";
+import { useData } from "../../hooks/useData";
 import { changeFav } from "../../store/slices/favoriteSlice";
 
 const useStyles = makeStyles((theme) => ({
@@ -51,14 +50,21 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const normalizeCategoryName = (name) => {
+    return name?.replace(/-/g, ' ').replace('%26', '&').replace('%2B', '+');
+};
+
 export default function Home() {
     const classes = useStyles();
     const params = useParams();
     const theme = useTheme();
-
-    const categoryId = params.id;
-
     const [categoryDetails, setCategoryDetails] = useState(null);
+    const categoryId = categoryDetails?.id;
+
+    const categoryName = normalizeCategoryName(decodeURIComponent(params.category));
+    const subCategoryOneName = normalizeCategoryName(params.subCategoryOne);
+    const subCategoryTwoName = normalizeCategoryName(params.subCategoryTwo);
+    const subCategoryThreeName = normalizeCategoryName(params.subCategoryThree);
 
     const { offlineMode } = useSelector((state) => state.download);
     const { playing } = useSelector((state) => state.player);
@@ -68,6 +74,7 @@ export default function Home() {
     const { loading, totalPages, currentPage, audioList, changePage } = useData({
         offlineMode,
         categoryId,
+        shouldSearch: !!categoryDetails,
     });
 
     const handleChangePage = (_, page) => {
@@ -75,9 +82,9 @@ export default function Home() {
     };
 
     useEffect(() => {
-        const categoryDetails = getCategoryById(categoryId);
+        const categoryDetails = getCategoryByNameAndSubCategoryNames(categoryName, [subCategoryOneName, subCategoryTwoName, subCategoryThreeName]);
         setCategoryDetails(categoryDetails);
-    }, [categoryId]);
+    }, [categoryName, subCategoryOneName, subCategoryTwoName, subCategoryThreeName]);
 
     const showPagination = !loading && audioList.length > 0 && totalPages > 1;
 
@@ -108,7 +115,6 @@ export default function Home() {
         )
     }
     useEffect(() => {
-
         if (favorite.find((item) => item.id === categoryDetails?.id)) {
             setPresent(true);
           } else {

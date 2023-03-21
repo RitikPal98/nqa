@@ -9,6 +9,7 @@ import { changeFav } from "../../store/slices/favoriteSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import Pagination from "@material-ui/lab/Pagination";
+import { navigateToCategory } from "../../helpers/navigateToCategory";
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -29,6 +30,13 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     display: "flex",
     width: "100%",
+  },
+
+  itemContainerCategory: {
+    cursor: "pointer",
+    display: "flex",
+    width: "100%",
+    backgroundColor: "#17999270",
   },
 
   image: {
@@ -93,7 +101,7 @@ function Favorite() {
         .reverse()
         .map((item, key) => (
           <Box
-            className={classes.itemContainer}
+            className={item.link === "category-link" ? classes.itemContainerCategory :classes.itemContainer}
             display="flex"
             alignItems="center"
             paddingTop={1}
@@ -122,7 +130,7 @@ function Favorite() {
               <p
                 onClick={() => {
                   if (item.link === "category-link") {
-                    history.push("/category/" + item.id);
+                    navigateToCategory(item.id, history);
                   }
                 }}
               >

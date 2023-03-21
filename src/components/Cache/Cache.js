@@ -8,8 +8,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { changeCache } from "../../store/slices/downloadSlice";
-
 import Pagination from '@material-ui/lab/Pagination';
+import { getSubCategoryIds, getSubCategoryNamesByIds } from "../../db/services";
+import { navigateToCategory } from "../../helpers/navigateToCategory";
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -97,11 +98,15 @@ const handleChange = (event, value) => {
             fontWeight="fontWeightMedium"
             fontSize="body2.fontSize"
           >
-            
-     <p onClick={()=>{
-       if(item.link==="category-link"){history.push("/category/"+item.id)}
-     }}>       {item.name}</p>
-         
+            <p
+              onClick={() => {
+                if (item.link === "category-link") {
+                  navigateToCategory(item.id, history);
+                }
+              }}
+            >
+              {item.name}
+            </p>
           </Box>
           <IconButton onClick={()=>handleCache(item.name, item.link, item.id, item.image, item.categoryId)}  className="fav-icon-container" size="small">
            <CheckCircleIcon className="check-cache-icon" />    

@@ -26,7 +26,7 @@ export const getAudioByName = async (searchText, page) => {
                 .table("audioList")
                 .offset(HARD_LIMIT)
                 .toArray();
-            
+
             const filteredRest = searchText.startsWith('"')
                 ? rest.filter(item => item.name.toLowerCase().includes(searchText.replace(/"/g, "").toLowerCase()))
                 : fuzzysort.go(searchText, rest, { key: 'name', allowTypo: true }).map(result => ({
@@ -57,7 +57,9 @@ export const getAudioByCategory = async (categoryId, page) => {
     // https://github.com/dfahlander/Dexie.js/issues/838
     try {
         const allItems = await db.table("audioList").limit(HARD_LIMIT).toArray();
-        let filtered = allItems.filter((item) => item.category_id === categoryId);
+        let filtered = allItems.filter((item) => {
+            return item.category_id === categoryId;
+        });
         if (allItems.length === HARD_LIMIT) {
             // We didn't get all data in first try.
             // Need to continue filtering one by one:
@@ -137,6 +139,18 @@ const recursivSearchByName = (categories, searchText) => {
     return filtered;
 };
 
+export const recursiveSearchByExactName = (categories, searchText) => {
+    let filtered = categories.filter(item => item.name.toLowerCase() === searchText.replace(/"/g, "").toLowerCase())
+
+    categories.forEach((category) => {
+        if (category.subCategories) {
+            filtered = filtered.concat(recursiveSearchByExactName(category.subCategories, searchText));
+        }
+    });
+
+    return filtered;
+};
+
 export const getCategoryById = (id) => {
     return recursivSearchById(categories, id);
 };
@@ -151,3 +165,90 @@ export const getCategoryByName = (searchText, page) => {
 
     return { data, allpage };
 };
+
+export const getCategoryByExactName = (searchText) => {
+    return recursiveSearchByExactName(categories, searchText)[0];
+};
+
+export const getCategoryByNameAndSubCategoryNames = (name, subCategoryNames) => {
+    const [subCategoryOneName, subCategoryTwoName, subCategoryThreeName] = subCategoryNames;
+    const category = getCategoryByExactName(name);
+
+    if (!category?.subCategories?.length) {
+        return category;
+    }
+
+    const subCategoryOne = category?.subCategories.find((item) => {
+        return normalizeCategoryName(item.name?.toLowerCase()) === normalizeCategoryName(subCategoryOneName?.toLowerCase());
+    });
+
+    if (!subCategoryOne?.subCategories?.length) {
+        if (subCategoryOne) {
+            return subCategoryOne;
+        }
+
+        return category;
+    }
+
+    const subCategoryTwo = subCategoryOne?.subCategories.find((item) => {
+        return normalizeCategoryName(item.name?.toLowerCase()) === normalizeCategoryName(subCategoryTwoName?.toLowerCase());
+    });
+
+    if (!subCategoryTwo?.subCategories?.length) {
+        if (subCategoryTwo) {
+            return subCategoryTwo;
+        }
+
+        return subCategoryOne;
+    }
+
+    const subCategoryThree = subCategoryTwo?.subCategories.find((item) => {
+        return normalizeCategoryName(item.name?.toLowerCase()) === normalizeCategoryName(subCategoryThreeName?.toLowerCase());
+    });
+
+    if (!subCategoryThree?.subCategories?.length) {
+        if (subCategoryThree) {
+            return subCategoryThree;
+        }
+
+        return subCategoryTwo;
+    }
+};
+
+const normalizeCategoryName = (categoryName) => {
+    return categoryName?.replace(/-/g, ' ');
+};
+
+export const getSubCategoryIds = (categoryId, subCategoryIds) => {
+    let category = getCategoryById(categoryId);
+    subCategoryIds.push(category.id);
+
+    if (category.parentId !== '0') {
+        category = getSubCategoryIds(category.parentId, subCategoryIds);
+    }
+
+    return { category, subCategoryIds };
+};
+
+const getCategoriesByIds = (subCategoryIds) => {
+    const categories = [];
+    subCategoryIds.forEach((id) => {
+        categories.push(getCategoryById(id));
+    });
+    return categories;
+};
+
+export const getSubCategoryNamesByIds = (subCategoryIds) => {
+    const categories = getCategoriesByIds(subCategoryIds);
+    return categories.map(category => category.name).reverse();
+}
+
+export const getRootCategory = (categoryId) => {
+    let category = getCategoryById(categoryId);
+
+    if (category.parentId !== '0') {
+        category = getCategoryById(category.parentId);
+    }
+
+    return category;
+}

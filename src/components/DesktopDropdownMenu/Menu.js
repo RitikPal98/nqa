@@ -1,14 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback } from "react";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
-import Paper from "@material-ui/core/Paper";
-import Popper from "@material-ui/core/Popper";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
 import { makeStyles } from "@material-ui/core/styles";
-import SubMenu from "./SubMenu";
+import React, { useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { getSubCategoryIds, getSubCategoryNamesByIds } from '../../db/services';
+import { navigateToCategory } from "../../helpers/navigateToCategory";
+import SubMenu from "./SubMenu";
+import {changeSubCatsVisible} from "../../store/slices/favoriteSlice";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,6 +49,8 @@ export default function Menu({ category }) {
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
     const history = useHistory();
+    const dispatch = useDispatch();
+
 
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
@@ -75,8 +81,15 @@ export default function Menu({ category }) {
         prevOpen.current = open;
     }, [open]);
 
-    const handleSelectCategory = (id) => {
-        history.push(`/category/${id}`);
+    const handleSelectCategory = ({ id }) => {
+        dispatch(
+            changeSubCatsVisible(
+                {
+                    subCatsVisible: false
+                }
+            )
+        )
+        navigateToCategory(id, history);
         setOpen(false);
     };
 
@@ -90,7 +103,7 @@ export default function Menu({ category }) {
                 );
             }
             return (
-                <MenuItem onClick={() => handleSelectCategory(category.id)} key={key} className={classes.title}>
+                <MenuItem onClick={() => handleSelectCategory(category)} key={key} className={classes.title}>
                     {category.name}
                 </MenuItem>
             );

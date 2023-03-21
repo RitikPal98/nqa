@@ -46,7 +46,7 @@ export const playerSlice = createSlice({
             let selectedList = [];
             let newArrayIndex = 0;
 
-            if (state.currentPlayingPosition === "home" || "category" || "search") {
+            if (state.currentPlayingPosition === "home" || "category" || "search" || "playlist") {
                 selectedList = current(state).currentAudioList;
             }
 
@@ -57,7 +57,6 @@ export const playerSlice = createSlice({
             if (state.currentPlayingPosition === "topChart") {
                 selectedList = current(state).topChart;
             }
-
 
             const currentArrayIndex = selectedList.findIndex((item) => item.id === current(state).id);
 

@@ -1,153 +1,179 @@
-.favorite-container{
-    background-color: white;
-    min-width: 200px;
-    min-height: 80px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    overflow-y: scroll;
-    padding: 10px;
-    max-height: 400px;
-    max-width: 700px;
-    justify-content: center;
-    align-items: center;
+.favorite-container {
+  background-color: white;
+  min-width: 200px;
+  min-height: 80px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow-y: scroll;
+  padding: 10px;
+  max-height: 400px;
+  max-width: 700px;
+  justify-content: center;
+  align-items: center;
 }
-.fav-name-container{
-flex: 1;
+.fav-name-container {
+  flex: 1;
 }
-.fav-icon-container>*{
-    color: rgb(240,100,100);
+.fav-icon-container > * {
+  color: rgb(240, 100, 100);
 }
-.share-btn{
-    display: flex;
-    border-radius: 4px;
-    overflow: hidden;
-    transition: 400ms ease-in-out;
+.share-btn {
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: 400ms ease-in-out;
+  animation-name: slide;
+  animation-duration: 400ms;
 }
 .share-btn > a {
-    border: 1px solid white;
-    border-radius: 100%;
-    font-family: Verdana, Arial;
-    text-decoration: none;
-    padding: 2px 4px;
-    color: #777;
-    transition: 350ms ease;
-    margin: 0 1px;
+  border: 1px solid white;
+  border-radius: 100%;
+  font-family: Verdana, Arial;
+  text-decoration: none;
+  padding: 2px 4px;
+  color: #777;
+  transition: 350ms ease;
+  margin: 0 1px;
+  margin-left: 10px;
 }
-.share-btn>*>*{
-    /* font-size: 1.5rem !important; */
+.share-btn > * > * {
+  /* font-size: 1.5rem !important; */
 }
 
-
-.share-btn > .btn-twitter{
-    background-color:rgb(29,161,245);
-    color: white;
+.share-btn > .btn-twitter {
+  background-color: rgb(29, 161, 245);
+  color: white;
 }
 .share-btn > .btn-twitter:hover {
-    cursor: pointer;
-    color: rgb(29,161,245);
-    background: white;
+  cursor: pointer;
+  color: rgb(29, 161, 245) !important;
+  background: white;
 }
 
-.share-btn > .btn-facebook{
-    color: white;
-    background:rgb(66,103,178);
+.share-btn > .btn-facebook {
+  color: white;
+  background: rgb(66, 103, 178);
 }
 .share-btn > .btn-facebook:hover {
-    cursor: pointer;
-    color: rgb(66,103,178);
-    background: white;
+  cursor: pointer;
+  color: rgb(66, 103, 178) !important;
+  background: white;
 }
 
-.share-btn > .btn-whatsapp{
-    background: rgb(18,140,126);
-    color: white;
+.share-btn > .btn-whatsapp {
+  background: rgb(18, 140, 126);
+  color: white;
 }
 .share-btn > .btn-whatsapp:hover {
-    cursor: pointer;
-    color: rgb(18,140,126);
-    background: white;
+  cursor: pointer;
+  color: rgb(18, 140, 126) !important;
+  background: white;
 }
 
-.share-btn > .btn-email{
-    background: rgb(66,100,170);
-    color: white;
+.share-btn > .btn-email {
+  background: rgb(66, 100, 170);
+  color: white;
 }
 .share-btn > .btn-email:hover {
-    cursor: pointer;
-    color:rgb(66,100,170);
-    background: white
-    ;
+  cursor: pointer;
+  color: rgb(66, 100, 170) !important;
+  background: white;
 }
-.download-icon-container>*{
-    color: #777 !important; 
-    font-size: 1.2rem;
-    padding: 0;
-    margin: 0 0 -5px 0;
+.download-icon-container > * {
+  color: #777;
+  font-size: 1.2rem;
+  padding: 0;
+  margin: 0 0 -5px 0;
 }
-.download-icon-container>*:hover{
-    color: rgb(18,140,126) !important;
-}
-
-.download-icon-container{
-    text-decoration: none;
-    padding: 0;
+.download-icon-container > *:hover {
+  color: rgb(18, 140, 126) !important;
 }
 
-
-
-
-@media (max-width:400px) {
-    .share-btn>*>*{
-        font-size: 1.19rem !important;
-    }
-.share-btn{
-    transform: translateX(-5px);    
+.download-icon-container {
+  text-decoration: none;
+  padding: 0;
 }
-.share-btn>*{
+
+@media (max-width: 400px) {
+  .share-btn > * > * {
+    font-size: 1.19rem !important;
+  }
+  .share-btn {
+    transform: translateX(-5px);
+    transition: 400ms ease-in-out;
+    animation-name: slide;
+    animation-duration: 400ms;
+  }
+  .share-btn > * {
     background: none !important;
-    color: #777 !important;
+    color: #777;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-.MuiGrid-spacing-xs-3 > .MuiGrid-item{
+  }
+  .MuiGrid-spacing-xs-3 > .MuiGrid-item {
     padding: 12px 4px 12px 4px !important;
-}
-.MuiGrid-item>.MuiPaper-root>.MuiBox-root{
+  }
+  .MuiGrid-item > .MuiPaper-root > .MuiBox-root {
     padding-left: 0px;
-}
-.share-btn > a {
-    padding: 0.4px 1px;
+  }
+  .share-btn > a {
+    margin-left: 10px;
+    /* padding: 0.4px 1px; */
     display: flex;
-}   
-.notification-container-copied{
+  }
+  .notification-container-copied {
     zoom: 0.9;
+  }
 }
+.fav-redirect-container {
+  display: flex;
+  width: 100%;
+  padding: 10px 4px 10px 4px;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  padding-bottom: 129px;
 }
-.fav-redirect-container{
-    display: flex;
+.fav-redirect-container > * > :last-child {
+  overflow: visible !important;
+  max-height: none;
+}
+
+.btn-link {
+  background-color: rgb(250, 80, 120) !important;
+  padding: 0 2px 0 2px;
+}
+.btn-link > * {
+  color: white;
+}
+.check-cache-icon {
+  color: rgb(16, 180, 102);
+  background: white;
+  border-radius: 100%;
+}
+
+@media (max-width: 500px) {
+  .down {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 400px) {
+  .down {
+    left: 8px;
+  }
+}
+
+@keyframes slide {
+  from {
+    width: 0%;
+  }
+
+  to {
     width: 100%;
-    padding: 10px 4px 10px 4px;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    box-sizing: border-box;
-    padding-bottom:129px
-}
-.fav-redirect-container>*>:last-child{
-    overflow: visible !important;
-    max-height: none;
-}
-
-.btn-link{
-    background-color: rgb(250,80,120) !important;
-    padding: 0 2px 0 2px;
-}
-.btn-link>*{
-    color: white;
-}
-.check-cache-icon{
-    color:rgb(16, 180, 102);
-    background:white;
-    border-radius: 100%;
-
+  }
 }

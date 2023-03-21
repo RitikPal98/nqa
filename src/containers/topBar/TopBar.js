@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { downloadAudioList } from "../../store/slices/downloadSlice";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import { version } from "../../data/config";
+import { changeSubCatsVisible } from "../../store/slices/favoriteSlice";
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -138,15 +139,30 @@ export default function PrimarySearchAppBar() {
   };
 
   const handleSearch = (e) => {
-      history.push(`/search?${e.target.value}`);
+    dispatch(
+      changeSubCatsVisible(
+        {
+          subCatsVisible: false
+        }
+      )
+    )
+    history.push(`/search?${e.target.value}`);
   };
 
   const handleHomeButtom = () => {
+    dispatch(
+      changeSubCatsVisible(
+        {
+          subCatsVisible: false
+        }
+      )
+    )
     history.push("/");
   };
 
   const handleOffline = async () => {
-      dispatch(downloadAudioList());
+    if (localStorage.getItem("offline_mode") && localStorage.getItem("offline_mode") === 'true') return;
+    dispatch(downloadAudioList());
   };
 
   const handleOnSelect = () => {
@@ -245,10 +261,19 @@ export default function PrimarySearchAppBar() {
                   <Switch color="primary" onClick={handleOffline} checked={offlineMode} />
                 </Box>
               </MenuItem> */}
-              <MenuItem onClick={()=>{history.push("/favorites")
-              handleClose()
+              <MenuItem onClick={() => {
+                history.push("/favorites")
+                handleClose()
               }} button={true}> Favorites </MenuItem>
+              <MenuItem onClick={() => {
+                history.push("/playlist")
+                handleClose()
+              }} button={true}> Playlist </MenuItem>
               <MenuItem button={false}>v{version}</MenuItem>
+              <MenuItem onClick={() => {
+                handleClose();
+                dispatch(downloadAudioList());
+              }} button={true}>Update</MenuItem>
             </Menu>
           </div>
 

@@ -8,6 +8,9 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import SubMenu from "./SubMenu";
 import { Slide } from "@material-ui/core";
+import { navigateToCategory } from "../../helpers/navigateToCategory";
+import { useDispatch } from "react-redux";
+import {changeSubCatsVisible} from "../../store/slices/favoriteSlice";
 
 const useStyles = makeStyles({
     root: {
@@ -19,10 +22,11 @@ const useStyles = makeStyles({
 export default function MobileDropdownMenu({ open, onSelect }) {
     const classes = useStyles();
     const history = useHistory();
+    const dispatch = useDispatch();
 
     const handleSelectCategory = (id) => {
         onSelect();
-        history.push(`/category/${id}`);
+        navigateToCategory(id, history);
     };
 
     const handleHomeButtom = () => {
@@ -39,6 +43,7 @@ export default function MobileDropdownMenu({ open, onSelect }) {
                     </SubMenu>
                 );
             }
+
             return (
                 <ListItem key={key} button onClick={() => handleSelectCategory(category.id)}>
                     <ListItemText primary={category.name} />
@@ -54,6 +59,19 @@ export default function MobileDropdownMenu({ open, onSelect }) {
                     <ListItemText primary="Home" />
                 </ListItem>
                 {rederCategories(categoryStrcture)}
+                <ListItem button
+                    onClick={() => {
+                        onSelect();
+                        dispatch(
+                            changeSubCatsVisible({
+                                subCatsVisible: false
+                            })
+                        )
+                        history.push("/favorites")
+                    }} 
+                >
+                    <ListItemText primary="Favorites" />
+                </ListItem>
             </List>
         </Slide>
     );

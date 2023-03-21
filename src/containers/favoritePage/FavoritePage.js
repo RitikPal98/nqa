@@ -4,6 +4,7 @@ import { Box } from "@material-ui/core";
 import Cache from '../../components/Cache/Cache';
 import Favorite from '../../components/Favorite/Favorite';
 import { makeStyles } from '@material-ui/core/styles';
+import { RecentlyPlayed } from "../../components"
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -41,6 +42,13 @@ function FavoritePage() {
                     Cached
                   </Box>
                   <Cache />
+                </Grid>
+                <Grid item xs={12} md={9}>
+                <Box className={classes.title} mb={3} fontSize="h4.fontSize" fontWeight="fontWeightBold">
+                  History
+                </Box>
+
+                <RecentlyPlayed />
                 </Grid>
               </div>
     )

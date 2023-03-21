@@ -4,7 +4,7 @@ import Box from "@material-ui/core/Box";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import AudioPlayer from "react-h5-audio-player";
+import AudioPlayer, { RHAP_UI } from "react-h5-audio-player";
 import { useDispatch, useSelector } from "react-redux";
 import { IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
@@ -13,6 +13,8 @@ import "react-h5-audio-player/lib/styles.css";
 import "./player.css";
 import { useHistory } from "react-router-dom";
 import * as offlineAPI from "../../db/services";
+import { navigateToCategory } from "../../helpers/navigateToCategory";
+import { ActionList } from "../../components";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         },
 
         [theme.breakpoints.up("xs")]: {
-            height: 120,
+            height: 120, // 145
         },
     },
 
@@ -54,6 +56,11 @@ const useStyles = makeStyles((theme) => ({
     categoryTitle: {
         color: "white",
         cursor: "pointer",
+        textDecoration: "underline",
+
+        "&:hover": {
+            backgroundColor: theme.palette.primary.dark
+        },
         padding: theme.spacing(1, 0, 1, 0),
         [theme.breakpoints.down("xs")]: {
             fontSize: 13,
@@ -81,7 +88,7 @@ export default function Player() {
 
     const classes = useStyles();
 
-    const { link, name, id, categoryId, open } = useSelector((state) => state.player);
+    const { link, name, id, categoryId, currentAudioList, open } = useSelector((state) => state.player);
     const dispatch = useDispatch();
     const theme = useTheme();
     const history = useHistory();
@@ -101,7 +108,7 @@ export default function Player() {
     };
 
     const onCategoryClick = () => {
-        history.push(`/category/${categoryId}`);
+        navigateToCategory(categoryId, history);
     };
 
     const togglePlayer = (status) => {
@@ -121,22 +128,27 @@ export default function Player() {
         }
     }, [id]);
 
+    const matches = useMediaQuery('(max-width:768px)');
+    const sm = useMediaQuery('(max-width:362px)');
+
     if (open) {
         return (
-            <Box className={classes.root} display="flex" zIndex={2}>
+            <Box className={classes.root} display="flex" zIndex={2} style={sm ? { height: '160px' } : matches ? { height: '145px' } : {}}>
                 <Box className={classes.playerContainer}>
                     <Box display="flex" justifyContent="space-between" alignItems="center" px={1}>
                         <Box display="flex" justifyContent="center" alignItems="center">
                             {categoryName && (
-                                <Box
-                                    onClick={onCategoryClick}
-                                    className={classes.categoryTitle}
-                                    display="flex"
-                                    fontWeight="fontWeightBold"
-                                >
-                                    {categoryName}
-                                    <div>&nbsp;-&nbsp;</div>
-                                </Box>
+                                <>
+                                    <Box
+                                        onClick={onCategoryClick}
+                                        className={classes.categoryTitle}
+                                        display="flex"
+                                        fontWeight="fontWeightBold"
+                                    >
+                                        {categoryName}
+                                    </Box>
+                                    <div style={{ color: "white" }}>&nbsp;-&nbsp;</div>
+                                </>
                             )}
                             <Box
                                 display="flex"
@@ -163,7 +175,11 @@ export default function Player() {
                         showJumpControls={false}
                         showSkipControls
                         layout={isMobile ? "stacked" : "horizontal-reverse"}
-                        //customAdditionalControls={[]}
+                        customAdditionalControls={[
+                            RHAP_UI.LOOP,
+                            matches ? null :
+                                <ActionList data={{ link, name, id, categoryId, category_id: 0, image: currentAudioList.filter(audio => audio.id === id)[0]?.image }} currentPlayingPosition="player" />
+                        ]}
                         className={classes.player}
                         autoPlay
                         src={link}
@@ -171,7 +187,14 @@ export default function Player() {
                         onClickPrevious={handlePrevious}
                         onPlay={() => togglePlayer(true)}
                         onPause={() => togglePlayer(false)}
-                        //crossOrigin="anonymous"
+                        footer={!matches ? null :
+                            (
+                                <Box display="flex" justifyContent="center" alignItems="center">
+                                    <ActionList data={{ link, name, id, categoryId, category_id: 0, image: currentAudioList.filter(audio => audio.id === id)[0]?.image }} currentPlayingPosition="player" />
+                                </Box>
+                            )
+                        }
+                    //crossOrigin="anonymous"
                     />
                 </Box>
             </Box>
